@@ -4,6 +4,7 @@
 I decided to explore and edit the osm data of [Hamburg in Germany](https://en.wikipedia.org/wiki/Hamburg). 
 It is the city I live and work in and would like to contribute to. The osm extract was downloaded [via mapzen](https://mapzen.com/data/metro-extracts/metro/hamburg_germany/).
 
+![OSM area maps of Hamburg](https://github.com/lennart-telwest/wrangling-osm-data/blob/master/summary/hamburg_osm_map_area.png?raw=true "OSM area Hamburg")
 
 ## Problems Encountered in the Data
 
