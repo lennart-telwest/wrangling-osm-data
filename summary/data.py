@@ -30,16 +30,6 @@ WAY_FIELDS = ['id', 'user', 'uid', 'version', 'changeset', 'timestamp']
 WAY_TAGS_FIELDS = ['id', 'key', 'value', 'type']
 WAY_NODES_FIELDS = ['id', 'node_id', 'position']
 
-def is_phone(element):
-    return (element.tag == "tag") and (element.attrib['k'] == 'phone')
-
-def update_phone_number(element):
-    phone = element.attrib['v']
-    if phone.startswith('0'):
-        clean_phone = '+49 ' + phone [1:]
-        element.attrib['v'] = clean_phone
-    return element
-
 
 def shape_element(element, node_attr_fields=NODE_FIELDS, way_attr_fields=WAY_FIELDS,
                   problem_chars=PROBLEMCHARS, default_tag_type='regular'):
@@ -119,6 +109,17 @@ def shape_element(element, node_attr_fields=NODE_FIELDS, way_attr_fields=WAY_FIE
 # ================================================== #
 #               Helper Functions                     #
 # ================================================== #
+
+def is_phone(element):
+    return (element.tag == "tag") and (element.attrib['k'] == 'phone')
+
+def update_phone_number(element):
+    phone = element.attrib['v']
+    if phone.startswith('0'):
+        clean_phone = '+49 ' + phone [1:]
+        element.attrib['v'] = clean_phone
+    return element
+
 def get_element(osm_file, tags=('node', 'way', 'relation')):
     """Yield element if it is the right type of tag"""
 
