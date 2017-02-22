@@ -10,13 +10,13 @@ from collections import defaultdict
 import cerberus
 import schema
 
-OSM_FILE = "/Users/lt/Git/portfolio-projects/open_streetmap_data_wrangling/data/hamburg_sample_k5.osm"
+OSM_FILE = "/Users/lt/Git/wrangling-osm-data/data/hamburg_sample_k5.osm"
 
-NODES_PATH = "/Users/lt/Git/portfolio-projects/open_streetmap_data_wrangling/data/nodes.csv"
-NODE_TAGS_PATH = "/Users/lt/Git/portfolio-projects/open_streetmap_data_wrangling/data/nodes_tags.csv"
-WAYS_PATH = "/Users/lt/Git/portfolio-projects/open_streetmap_data_wrangling/data/ways.csv"
-WAY_NODES_PATH = "/Users/lt/Git/portfolio-projects/open_streetmap_data_wrangling/data/ways_nodes.csv"
-WAY_TAGS_PATH = "/Users/lt/Git/portfolio-projects/open_streetmap_data_wrangling/data/ways_tags.csv"
+NODES_PATH = "/Users/lt/Git/wrangling-osm-data/data/nodes.csv"
+NODE_TAGS_PATH = "/Users/lt/Git/wrangling-osm-data/data/nodes_tags.csv"
+WAYS_PATH = "/Users/lt/Git/wrangling-osm-data/data/ways.csv"
+WAY_NODES_PATH = "/Users/lt/Git/wrangling-osm-data/data/ways_nodes.csv"
+WAY_TAGS_PATH = "/Users/lt/Git/wrangling-osm-data/data/ways_tags.csv"
 
 LOWER_COLON = re.compile(r'^([a-z]|_)+:([a-z]|_)+')
 PROBLEMCHARS = re.compile(r'[=\+/&<>;\'"\?%#$@\,\. \t\r\n]')
@@ -30,6 +30,16 @@ WAY_FIELDS = ['id', 'user', 'uid', 'version', 'changeset', 'timestamp']
 WAY_TAGS_FIELDS = ['id', 'key', 'value', 'type']
 WAY_NODES_FIELDS = ['id', 'node_id', 'position']
 
+def is_phone(element):
+    return (element.tag == "tag") and (element.attrib['k'] == 'phone')
+
+def update_phone_number(element):
+    phone = element.attrib['v']
+    if phone.startswith('0'):
+        clean_phone = '+49 ' + phone [1:]
+        element.attrib['v'] = clean_phone
+    return element
+
 
 def shape_element(element, node_attr_fields=NODE_FIELDS, way_attr_fields=WAY_FIELDS,
                   problem_chars=PROBLEMCHARS, default_tag_type='regular'):
@@ -41,6 +51,12 @@ def shape_element(element, node_attr_fields=NODE_FIELDS, way_attr_fields=WAY_FIE
     tags = []
     tags_dict = {}
 
+    for el_tag in element.iter('tag'):
+        key_tag = el_tag.attrib['k']
+
+        if is_phone(el_tag):
+            update_phone_number(el_tag)
+
     if element.tag == 'node':
         for node in NODE_FIELDS:
             replacements = 0
@@ -50,7 +66,7 @@ def shape_element(element, node_attr_fields=NODE_FIELDS, way_attr_fields=WAY_FIE
                 print(node)
                 node_attribs[node] = '00000'
                 pass
-
+    
     if element.tag == 'node':
         for field in node_attr_fields:
             if field in element.attrib:

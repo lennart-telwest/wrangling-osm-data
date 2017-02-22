@@ -60,7 +60,22 @@ Anbieter möchte nicht veröffentlicht werden|3
 +49 4182 501842|2
 +49 4186 892491|2
 
-I started creating regex replacements but soon realized that the it would not make sense to replace eg. the 0 with + in the beginning as there are cases such as `112` being the number emergency number. Also some phone numbers contained useful information for the OSM community such as `Anbieter möchte nicht veröffentlicht werden` meaning that the owner of the business did not want his number to be published in OSM. So I decided to leave the phone numbers as they are and handle them as strings.
+I started creating regex replacements but soon realized that the it would not make sense to replace eg. the 0 with + in the beginning as there are cases such as `112` being the number emergency number. Also some phone numbers contained useful information for the OSM community such as `Anbieter möchte nicht veröffentlicht werden` meaning that the owner of the business did not want his number to be published in OSM. 
+
+So I decided only change those strings where the 0 in the beginning was not yet replaced by the international prefix +49:
+
+```python
+def is_phone(element):
+    return (element.tag == "tag") and (element.attrib['k'] == 'phone')
+
+def update_phone_number(element):
+    phone = element.attrib['v']
+    if phone.startswith('0'):
+        clean_phone = '+49 ' + phone [1:]
+        element.attrib['v'] = clean_phone
+    return element
+```
+
 
 ## Surprisingly Clean Data
 
